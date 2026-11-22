@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Bamboo Insights – Bamboo Value Chain Research Engine</title>
+<script src="assets/tailwind.cdn.js"></script>
+<script src="assets/chart.umd.min.js"></script>
+<script src="data/data.js"></script>
+<style>
+  :root{--green-primary:#2d6a4f;--green-dark:#1b4332;--green-mid:#40916c;--green-light:#74c69d;--green-pale:#d8f3dc;--green-xpale:#f0faf2;--accent:#52b788;--text-dark:#1a2e21;--text-mid:#374151;--warning:#b45309;--gap-red:#dc2626;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f9fafb;color:var(--text-dark);min-height:100vh;}
+  /* Sidebar */
+  #sidebar{position:fixed;top:0;left:0;height:100vh;width:260px;background:var(--green-dark);color:#fff;z-index:100;display:flex;flex-direction:column;transition:transform .3s;overflow-y:auto;}
+  #sidebar.hidden{transform:translateX(-260px);}
+  #sidebar-brand{display:flex;align-items:center;gap:12px;padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.12);}
+  .brand-logo{width:38px;height:38px;background:var(--green-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .brand-name{font-size:15px;font-weight:700;line-height:1.2;}
+  .brand-sub{font-size:11px;opacity:0.65;margin-top:1px;}
+  #sidebar nav{flex:1;padding:12px 0;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:13.5px;color:rgba(255,255,255,0.8);border-left:3px solid transparent;transition:all .2s;}
+  .nav-item:hover,.nav-item.active{background:rgba(255,255,255,0.1);color:#fff;border-left-color:var(--green-light);}
+  .nav-item .nav-icon{width:18px;height:18px;opacity:0.8;}
+  .nav-num{font-size:11px;background:rgba(255,255,255,0.15);border-radius:4px;padding:1px 5px;margin-left:auto;}
+  /* Main area */
+  #main{margin-left:260px;min-height:100vh;transition:margin .3s;}
+  #main.full{margin-left:0;}
+  /* Top bar */
+  #topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:12px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+  #menu-btn{background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;font-size:20px;color:var(--text-dark);}
+  #section-title{font-size:16px;font-weight:600;color:var(--text-dark);}
+  #topbar-search{flex:1;max-width:400px;position:relative;}
+  #topbar-search input{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:7px 12px 7px 36px;font-size:13px;outline:none;}
+  #topbar-search input:focus{border-color:var(--green-mid);}
+  #topbar-search .s-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:0.4;font-size:14px;}
+  /* Sections */
+  .section{display:none;padding:28px 32px;max-width:1400px;animation:fadeIn .2s;}
+  .section.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  /* Cards */
+  .card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.05);}
+  .card-sm{padding:14px 18px;}
+  .stat-card{background:var(--green-dark);color:#fff;border-radius:12px;padding:20px;text-align:center;}
+  .stat-card .stat-num{font-size:32px;font-weight:700;line-height:1;}
+  .stat-card .stat-label{font-size:12px;opacity:0.75;margin-top:4px;}
+  .stat-card.light{background:var(--green-pale);color:var(--green-dark);}
+  /* Tags */
+  .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:var(--green-pale);color:var(--green-dark);}
+  .tag.red{background:#fee2e2;color:#991b1b;}
+  .tag.amber{background:#fef3c7;color:#92400e;}
+  .tag.blue{background:#dbeafe;color:#1e40af;}
+  .tag.purple{background:#ede9fe;color:#5b21b6;}
+  .tag.gray{background:#f3f4f6;color:#374151;}
+  .tag.karnataka{background:#bbf7d0;color:#065f46;}
+  .tag.national{background:#e0e7ff;color:#3730a3;}
+  .gap-badge{background:#fef2f2;border:1px solid #fecaca;color:var(--gap-red);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;}
+  /* Table */
+  .tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid #e5e7eb;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th{background:var(--green-xpale);color:var(--green-dark);font-weight:600;padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid #e5e7eb;cursor:pointer;user-select:none;}
+  th:hover{background:var(--green-pale);}
+  td{padding:9px 12px;border-bottom:1px solid #f3f4f6;vertical-align:top;line-height:1.4;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#fafafa;}
+  .source-link{color:var(--green-mid);text-decoration:underline;font-size:11px;word-break:break-all;}
+  /* Filters */
+  .filter-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;}
+  select.flt,input.flt{padding:7px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:12.5px;outline:none;background:#fff;}
+  select.flt:focus,input.flt:focus{border-color:var(--green-mid);}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+  .btn-primary{background:var(--green-mid);color:#fff;}
+  .btn-primary:hover{background:var(--green-primary);}
+  .btn-outline{background:#fff;color:var(--green-primary);border:1.5px solid var(--green-primary);}
+  .btn-outline:hover{background:var(--green-xpale);}
+  .btn-sm{padding:5px 12px;font-size:12px;}
+  /* Pagination */
+  .pag{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:14px;}
+  .pag button{padding:5px 11px;border-radius:6px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-size:12px;}
+  .pag button.active{background:var(--green-mid);color:#fff;border-color:var(--green-mid);}
+  .pag button:hover:not(.active){background:#f9fafb;}
+  .pag .pag-info{font-size:12px;color:#6b7280;margin-left:8px;}
+  /* Value chain viz */
+  .vc-flow{display:flex;flex-wrap:wrap;gap:0;align-items:flex-start;padding:20px 0;}
+  .vc-stage{background:#fff;border:2px solid var(--green-light);border-radius:14px;padding:18px 16px;min-width:160px;max-width:200px;text-align:center;position:relative;cursor:pointer;transition:all .2s;}
+  .vc-stage:hover,.vc-stage.active{border-color:var(--green-primary);box-shadow:0 4px 16px rgba(45,106,79,0.15);}
+  .vc-stage .vc-icon{font-size:28px;margin-bottom:8px;}
+  .vc-stage .vc-name{font-size:13px;font-weight:700;color:var(--green-dark);}
+  .vc-arrow{display:flex;align-items:center;padding:0 6px;color:var(--green-light);font-size:22px;padding-top:40px;}
+  .vc-detail{background:var(--green-xpale);border:1px solid var(--green-pale);border-radius:12px;padding:20px;margin-top:16px;display:none;}
+  .vc-detail.active{display:block;}
+  /* Research gap */
+  .gap-card{background:#fff;border-left:4px solid var(--gap-red);border-radius:0 10px 10px 0;padding:16px;margin-bottom:12px;border:1px solid #fecaca;border-left:4px solid var(--gap-red);}
+  /* Sources */
+  .source-card{background:#fff;border-radius:10px;border:1px solid #e5e7eb;padding:16px;transition:box-shadow .2s;}
+  .source-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+  /* Section header */
+  .sec-hdr{margin-bottom:24px;}
+  .sec-hdr h1{font-size:24px;font-weight:700;color:var(--green-dark);}
+  .sec-hdr p{margin-top:6px;font-size:14px;color:#6b7280;}
+  /* Compare */
+  .compare-select{background:var(--green-xpale);border-radius:12px;padding:20px;margin-bottom:20px;}
+  /* Mobile overlay backdrop */
+  #sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90;}
+  /* Responsive */
+  @media(max-width:768px){
+    #sidebar{transform:translateX(-260px);}
+    #sidebar.show{transform:translateX(0);}
+    #sb-overlay{display:block;}
+    #main{margin-left:0;}
+    .section{padding:16px;}
+    .vc-flow{flex-direction:column;align-items:center;}
+    .vc-arrow{transform:rotate(90deg);padding-top:0;padding:4px 0;}
+    #geo-cards{grid-template-columns:1fr!important;}
+  }
+  /* Hero banner */
+  .hero{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green-mid) 100%);border-radius:16px;padding:40px;color:#fff;position:relative;overflow:hidden;margin-bottom:24px;}
+  .hero::before{content:'🎋';position:absolute;right:30px;top:20px;font-size:100px;opacity:0.08;line-height:1;}
+  .hero h1{font-size:30px;font-weight:800;line-height:1.2;}
+  .hero p{margin-top:10px;opacity:0.85;font-size:15px;max-width:600px;}
+  .hero-search{display:flex;gap:8px;margin-top:20px;max-width:520px;}
+  .hero-search input{flex:1;padding:12px 16px;border-radius:10px;border:none;font-size:14px;outline:none;}
+  .hero-search button{padding:12px 20px;background:var(--green-light);color:var(--green-dark);font-weight:700;border:none;border-radius:10px;cursor:pointer;font-size:14px;}
+  /* Note box */
+  .note-box{background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;font-size:12.5px;color:#78350f;margin-bottom:16px;}
+  .info-box{background:var(--green-xpale);border:1px solid var(--green-pale);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--green-dark);}
+  /* Evidence type pills */
+  .ev-official{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;}
+  .ev-published{background:#eff6ff;color:#1e3a8a;border:1px solid #bfdbfe;}
+  .ev-gap{background:#fef2f2;color:#991b1b;border:1px solid #fecaca;}
+  .ev-news{background:#fffbeb;color:#78350f;border:1px solid #fde68a;}
+  .ev-govt{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+  .ev-pill{display:inline-block;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:600;}
+  /* Tooltip */
+  .tooltip{position:relative;cursor:help;}
+  .tooltip::after{content:attr(data-tip);position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:4px 8px;border-radius:5px;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:999;}
+  .tooltip:hover::after{opacity:1;}
+  /* Home quick-nav */
+  .qnav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+  .qnav-card{background:#fff;border:1.5px solid #e5e7eb;border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;}
+  .qnav-card:hover{border-color:var(--green-mid);background:var(--green-xpale);box-shadow:0 2px 8px rgba(45,106,79,0.1);}
+  .qnav-icon{font-size:24px;width:42px;height:42px;background:var(--green-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .qnav-label{font-size:13px;font-weight:600;color:var(--text-dark);}
+  .qnav-desc{font-size:11.5px;color:#6b7280;margin-top:1px;}
+</style>
+</head>
+<body>
+
+<div id="sb-overlay" style="display:none;" onclick="closeSidebarMobile()"></div>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <div id="sidebar-brand">
+    <div class="brand-logo">🎋</div>
+    <div>
+      <div class="brand-name">Bamboo Insights</div>
+      <div class="brand-sub">Value Chain Research Engine</div>
+    </div>
+  </div>
+  <nav id="sidebar-nav"></nav>
+  <div style="padding:16px 20px;border-top:1px solid rgba(255,255,255,0.1);font-size:11px;opacity:0.5;line-height:1.5;">
+    Karnataka Focus · India-wide context<br/>117 records · 16 sources
+  </div>
+</div>
+
+<!-- Main -->
+<div id="main">
+  <!-- Top bar -->
+  <div id="topbar">
+    <button id="menu-btn" onclick="toggleSidebar()" title="Toggle menu">☰</button>
+    <span id="section-title">Home / Dashboard</span>
+    <div id="topbar-search">
+      <span class="s-icon">🔍</span>
+      <input id="global-search" type="text" placeholder="Search all records…" oninput="globalSearch(this.value)"/>
+    </div>
+  </div>
+
+  <!-- SECTION 01: HOME -->
+  <div id="sec-home" class="section active" style="max-width:1200px;">
+    <div class="hero">
+      <h1>🎋 Bamboo Value Chain<br/>Research Engine</h1>
+      <p>A transparent research platform documenting bamboo cultivation, workers, transportation, markets and value-added products in Karnataka and across India. All data sourced from verified published studies.</p>
+      <div class="hero-search">
+        <input id="hero-search" type="text" placeholder="Search records, metrics, geographies…" onkeydown="if(event.key==='Enter')doHeroSearch()"/>
+        <button onclick="doHeroSearch()">Search →</button>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div id="home-stats" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;margin-bottom:28px;"></div>
+
+    <div class="note-box">⚠️ <strong>Data Authenticity Notice:</strong> All statistics on this platform come directly from the uploaded research dataset (117 verified records). No data has been invented or estimated. Where information is unavailable, this is clearly marked as a research gap.</div>
+
+    <!-- Category breakdown -->
+    <div class="card" style="margin-bottom:20px;">
+      <h2 style="font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:16px;">📊 Research Coverage by Value-Chain Stage</h2>
+      <div id="home-stage-chart-wrap" style="max-height:280px;">
+        <canvas id="home-stage-chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Geography split -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;" id="geo-cards">
+      <div class="card">
+        <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">🗺️ Karnataka Records</h3>
+        <div id="kar-geo-list"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">🇮🇳 Other Regions</h3>
+        <div id="other-geo-list"></div>
+      </div>
+    </div>
+
+    <!-- Quick navigation -->
+    <div class="sec-hdr">
+      <h2 style="font-size:18px;font-weight:700;color:var(--green-dark);">Quick Navigation</h2>
+    </div>
+    <div class="qnav-grid" id="quick-nav"></div>
+  </div>
+
+  <!-- SECTION 02: EXPLORE DATASET -->
+  <div id="sec-explore" class="section">
+    <div class="sec-hdr">
+      <h1>🔬 Explore Dataset</h1>
+      <p>All 117 research records from the Bamboo Value Chain Research Dataset. Search, filter, sort and browse.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="filter-row">
+        <input class="flt" id="exp-search" type="text" placeholder="🔍 Search keyword…" oninput="explorePage=1;renderExplore()" style="min-width:200px;"/>
+        <select class="flt" id="exp-cat" onchange="explorePage=1;renderExplore()"><option value="">All Categories</option></select>
+        <select class="flt" id="exp-stage" onchange="explorePage=1;renderExplore()"><option value="">All Stages</option></select>
+        <select class="flt" id="exp-geo" onchange="explorePage=1;renderExplore()"><option value="">All Geographies</option></select>
+        <select class="flt" id="exp-year" onchange="explorePage=1;renderExplore()"><option value="">All Years</option></select>
+        <select class="flt" id="exp-ev" onchange="explorePage=1;renderExplore()"><option value="">All Evidence Types</option></select>
+        <button class="btn btn-outline btn-sm" onclick="clearExploreFilters()">✕ Clear</button>
+        <button class="btn btn-primary btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+      <div id="exp-info" style="font-size:12px;color:#6b7280;margin-bottom:8px;"></div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table id="exp-table">
+        <thead>
+          <tr>
+            <th onclick="sortExplore('Record_ID')">ID ↕</th>
+            <th onclick="sortExplore('Category')">Category ↕</th>
+            <th onclick="sortExplore('Value_Chain_Stage')">Stage ↕</th>
+            <th onclick="sortExplore('Metric_or_Finding')">Metric / Finding ↕</th>
+            <th onclick="sortExplore('Value')">Value ↕</th>
+            <th>Unit</th>
+            <th onclick="sortExplore('Geography')">Geography ↕</th>
+            <th onclick="sortExplore('Publication_Year')">Pub. Year ↕</th>
+            <th>Data Period</th>
+            <th>Evidence Type</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="exp-tbody"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="exp-pag"></div>
+  </div>
+
+  <!-- SECTION 03: FARMER & CULTIVATION -->
+  <div id="sec-farmer" class="section">
+    <div class="sec-hdr">
+      <h1>🌱 Farmer &amp; Cultivation</h1>
+      <p>Research findings on bamboo cultivation: costs, yields, species, spacing, income and profitability. Sources clearly cited per finding.</p>
+    </div>
+    <div class="note-box">Different cultivation models and regional cost estimates are presented separately and are not averaged. Source and geography are shown for every finding.</div>
+    <div id="farmer-content"></div>
+  </div>
+
+  <!-- SECTION 04: WORKERS & LABOUR -->
+  <div id="sec-workers" class="section">
+    <div class="sec-hdr">
+      <h1>👷 Workers &amp; Labour</h1>
+      <p>Labour requirements, wages, harvesting activities, workforce challenges and skill requirements documented in research.</p>
+    </div>
+    <div id="workers-content"></div>
+  </div>
+
+  <!-- SECTION 05: TRANSPORTATION & LOGISTICS -->
+  <div id="sec-transport" class="section">
+    <div class="sec-hdr">
+      <h1>🚛 Transportation &amp; Logistics</h1>
+      <p>Transportation costs, logistics challenges and supply-chain findings from research. No costs have been invented.</p>
+    </div>
+    <div id="transport-content"></div>
+  </div>
+
+  <!-- SECTION 06: MARKET & PRODUCTS -->
+  <div id="sec-market" class="section">
+    <div class="sec-hdr">
+      <h1>🏪 Market &amp; Products</h1>
+      <p>Raw bamboo markets, value-added products, pricing, traders, marketing channels and business opportunities.</p>
+    </div>
+    <div id="market-content"></div>
+  </div>
+
+  <!-- SECTION 07: VALUE CHAIN VISUALIZATION -->
+  <div id="sec-vc" class="section">
+    <div class="sec-hdr">
+      <h1>🔗 Value Chain Visualization</h1>
+      <p>Interactive flow of the bamboo value chain from cultivation to end market. Click each stage to explore connected research findings.</p>
+    </div>
+    <div id="vc-content"></div>
+  </div>
+
+  <!-- SECTION 08: COMPARE DATA -->
+  <div id="sec-compare" class="section">
+    <div class="sec-hdr">
+      <h1>📊 Compare Data</h1>
+      <p>Compare research findings across geographies, years and cultivation models. Only compatible units are compared.</p>
+    </div>
+    <div class="note-box">⚠️ Comparisons are drawn only from records with compatible units and measurement approaches. Averages are not calculated across unrelated studies.</div>
+    <div id="compare-content"></div>
+  </div>
+
+  <!-- SECTION 09: RESEARCH GAPS -->
+  <div id="sec-gaps" class="section">
+    <div class="sec-hdr">
+      <h1>🔍 Research Gaps</h1>
+      <p>Identified missing information in the bamboo value chain, with guidance on what field research could address each gap.</p>
+    </div>
+    <div id="gaps-content"></div>
+  </div>
+
+  <!-- SECTION 10: SOURCES & REFERENCES -->
+  <div id="sec-sources" class="section">
+    <div class="sec-hdr">
+      <h1>📚 Sources &amp; References</h1>
+      <p>All 16 primary sources used in this research dataset. All URLs are clickable for independent verification.</p>
+    </div>
+    <div id="sources-content"></div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ============================================================
+// DATA LAYER
+// ============================================================
+const DATA = window.BAMBOO_DATA;
+const RECORDS = DATA.records;
+const SOURCES = DATA.sources;
+
+// Source lookup
+const srcMap = {};
+SOURCES.forEach(s => { srcMap[s.Source_ID] = s; });
+
+// Karnataka geography test
+function isKarnataka(geo) {
+  if (!geo) return false;
+  const g = geo.toLowerCase();
+  return g.includes('karnataka') || g.includes('uttara kannada') || g.includes('dharwad') ||
+         g.includes('sullia') || g.includes('mundgod') || g.includes('haliyal');
+}
+
+// Evidence type classification
+function evClass(ev) {
+  if (!ev) return 'ev-pill tag gray';
+  const e = ev.toLowerCase();
+  if (e.includes('research gap')) return 'ev-pill ev-gap';
+  if (e.includes('official') || e.includes('government')) return 'ev-pill ev-govt';
+  if (e.includes('news')) return 'ev-pill ev-news';
+  return 'ev-pill ev-published';
+}
+
+function evShort(ev) {
+  if (!ev) return '—';
+  const e = ev.toLowerCase();
+  if (e.includes('research gap')) return 'Research Gap';
+  if (e.includes('official karnataka')) return 'Official KA';
+  if (e.includes('official')) return 'Official';
+  if (e.includes('government')) return 'Govt. Data';
+  if (e.includes('news')) return 'News Report';
+  if (e.includes('published primary')) return 'Primary Study';
+  if (e.includes('published qualitative')) return 'Qual. Finding';
+  if (e.includes('published study')) return 'Published Study';
+  if (e.includes('published')) return 'Published';
+  if (e.includes('derived')) return 'Derived';
+  return ev.length > 22 ? ev.slice(0, 22) + '…' : ev;
+}
+
+function geoTag(geo) {
+  if (!geo) return '';
+  if (isKarnataka(geo)) return '<span class="tag karnataka">Karnataka</span>';
+  if (geo.toLowerCase().includes('india') && !isKarnataka(geo)) return '<span class="tag national">National</span>';
+  return '<span class="tag gray">' + geo.split(',')[0] + '</span>';
+}
+
+function sourceLink(rec) {
+  const url = rec.Source_URL;
+  const sid = rec.Source_ID;
+  const src = srcMap[sid];
+  if (!url || url === '—' || url === 'None' || url === 'null') {
+    return src ? '<span style="font-size:11px;color:#6b7280;">' + (src.Title || sid) + '</span>' : '—';
+  }
+  const label = src ? (src.Authors_or_Publisher || sid) : sid;
+  return '<a href="' + url + '" class="source-link" target="_blank" rel="noopener">' + label + ' ↗</a>';
+}
+
+function formatValue(v) {
+  if (v === null || v === undefined) return '—';
+  if (typeof v === 'number') return v.toLocaleString('en-IN');
+  return String(v);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+const NAV_ITEMS = [
+  { id:'home', label:'Home / Dashboard', icon:'🏠', section:'sec-home' },
+  { id:'explore', label:'Explore Dataset', icon:'🔬', section:'sec-explore' },
+  { id:'farmer', label:'Farmer & Cultivation', icon:'🌱', section:'sec-farmer' },
+  { id:'workers', label:'Workers & Labour', icon:'👷', section:'sec-workers' },
+  { id:'transport', label:'Transportation & Logistics', icon:'🚛', section:'sec-transport' },
+  { id:'market', label:'Market & Products', icon:'🏪', section:'sec-market' },
+  { id:'vc', label:'Value Chain Visualization', icon:'🔗', section:'sec-vc' },
+  { id:'compare', label:'Compare Data', icon:'📊', section:'sec-compare' },
+  { id:'gaps', label:'Research Gaps', icon:'🔍', section:'sec-gaps' },
+  { id:'sources', label:'Sources & References', icon:'📚', section:'sec-sources' },
+];
+
+let currentSection = 'home';
+
+function buildNav() {
+  const nav = document.getElementById('sidebar-nav');
+  NAV_ITEMS.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'nav-item' + (item.id === currentSection ? ' active' : '');
+    el.id = 'nav-' + item.id;
+    el.innerHTML = `<span style="font-size:16px;">${item.icon}</span><span>${item.label}</span><span class="nav-num">${String(i+1).padStart(2,'0')}</span>`;
+    el.onclick = () => goTo(item.id);
+    nav.appendChild(el);
+  });
+}
+
+function goTo(id) {
+  const item = NAV_ITEMS.find(n => n.id === id);
+  if (!item) return;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(item.section).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  document.getElementById('section-title').textContent = item.label;
+  currentSection = id;
+  window.scrollTo(0, 0);
+  // Lazy-init sections
+  if (id === 'explore') initExplore();
+  if (id === 'farmer') renderFarmer();
+  if (id === 'workers') renderWorkers();
+  if (id === 'transport') renderTransport();
+  if (id === 'market') renderMarket();
+  if (id === 'vc') renderVC();
+  if (id === 'compare') renderCompare();
+  if (id === 'gaps') renderGaps();
+  if (id === 'sources') renderSources();
+  // Close sidebar on mobile
+  if (window.innerWidth < 768) {
+    document.getElementById('sidebar').classList.remove('show');
+    document.getElementById('sb-overlay').style.display = 'none';
+  }
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const overlay = document.getElementById('sb-overlay');
+  if (window.innerWidth < 768) {
+    const showing = sb.classList.toggle('show');
+    overlay.style.display = showing ? 'block' : 'none';
+  } else {
+    sb.classList.toggle('hidden');
+    document.getElementById('main').classList.toggle('full');
+  }
+}
+
+// ============================================================
+// HOME / DASHBOARD
+// ============================================================
+function renderHome() {
+  // Stats
+  const statsDiv = document.getElementById('home-stats');
+  const karRecs = RECORDS.filter(r => isKarnataka(r.Geography));
+  const gapRecs = RECORDS.filter(r => r.Evidence_Type === 'Research gap');
+  const cats = new Set(RECORDS.map(r => r.Category));
+  const stages = new Set(RECORDS.map(r => r.Value_Chain_Stage));
+  
+  const stats = [
+    { num: RECORDS.length, label: 'Research Records', color: '' },
+    { num: SOURCES.length, label: 'Primary Sources', color: '' },
+    { num: karRecs.length, label: 'Karnataka Records', color: 'light' },
+    { num: cats.size, label: 'Research Categories', color: '' },
+    { num: stages.size, label: 'Value Chain Stages', color: '' },
+    { num: gapRecs.length, label: 'Identified Research Gaps', color: 'light' },
+  ];
+  statsDiv.innerHTML = stats.map(s =>
+    `<div class="stat-card ${s.color}">
+      <div class="stat-num">${s.num}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`
+  ).join('');
+
+  // Stage chart
+  const stageCounts = {};
+  RECORDS.forEach(r => { stageCounts[r.Value_Chain_Stage] = (stageCounts[r.Value_Chain_Stage]||0)+1; });
+  const sortedStages = Object.entries(stageCounts).sort((a,b) => b[1]-a[1]);
+  
+  const ctx = document.getElementById('home-stage-chart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sortedStages.map(s => s[0]),
+      datasets: [{
+        label: 'Records',
+        data: sortedStages.map(s => s[1]),
+        backgroundColor: '#40916c',
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+  document.getElementById('home-stage-chart-wrap').style.height = (sortedStages.length * 28 + 40) + 'px';
+
+  // Geo lists
+  const geoCounts = {};
+  RECORDS.forEach(r => { geoCounts[r.Geography] = (geoCounts[r.Geography]||0)+1; });
+  const karGeos = Object.entries(geoCounts).filter(([g]) => isKarnataka(g)).sort((a,b)=>b[1]-a[1]);
+  const otherGeos = Object.entries(geoCounts).filter(([g]) => !isKarnataka(g)).sort((a,b)=>b[1]-a[1]);
+  
+  document.getElementById('kar-geo-list').innerHTML = karGeos.map(([g,c]) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f3f4f6;">
+      <span style="font-size:12px;color:var(--text-mid);">${g}</span>
+      <span class="tag karnataka">${c}</span>
+    </div>`
+  ).join('') + `<div style="margin-top:8px;font-size:11px;color:#6b7280;">Total: ${karGeos.reduce((a,[,c])=>a+c,0)} records</div>`;
+  
+  document.getElementById('other-geo-list').innerHTML = otherGeos.map(([g,c]) =>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f3f4f6;">
+      <span style="font-size:12px;color:var(--text-mid);">${g}</span>
+      <span class="tag gray">${c}</span>
+    </div>`
+  ).join('') + `<div style="margin-top:8px;font-size:11px;color:#6b7280;">Total: ${otherGeos.reduce((a,[,c])=>a+c,0)} records</div>`;
+
+  // Quick nav
+  const qnav = document.getElementById('quick-nav');
+  const sections = [
+    { id:'explore', icon:'🔬', label:'Explore Dataset', desc:`All ${RECORDS.length} research records with filters` },
+    { id:'farmer', icon:'🌱', label:'Farmer & Cultivation', desc:'Costs, yields, species, income' },
+    { id:'workers', icon:'👷', label:'Workers & Labour', desc:'Wages, labour requirements, challenges' },
+    { id:'transport', icon:'🚛', label:'Transportation', desc:'Logistics costs and challenges' },
+    { id:'market', icon:'🏪', label:'Market & Products', desc:'Prices, channels, value-added products' },
+    { id:'vc', icon:'🔗', label:'Value Chain Flow', desc:'Interactive stage-by-stage visualization' },
+    { id:'compare', icon:'📊', label:'Compare Data', desc:'Regional and cross-study comparisons' },
+    { id:'gaps', icon:'🔍', label:'Research Gaps', desc:'Identified missing information' },
+    { id:'sources', icon:'📚', label:'Sources', desc:`${SOURCES.length} verified primary sources` },
+  ];
+  qnav.innerHTML = sections.map(s =>
+    `<div class="qnav-card" onclick="goTo('${s.id}')">
+      <div class="qnav-icon">${s.icon}</div>
+      <div>
+        <div class="qnav-label">${s.label}</div>
+        <div class="qnav-desc">${s.desc}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+// ============================================================
+// EXPLORE DATASET
+// ============================================================
+let exploreData = [...RECORDS];
+let exploreSortKey = 'Record_ID';
+let exploreSortDir = 1;
+let explorePage = 1;
+const EXP_PAGE_SIZE = 20;
+let exploreInitDone = false;
+
+function initExplore() {
+  if (exploreInitDone) return;
+  exploreInitDone = true;
+  
+  const cats = [...new Set(RECORDS.map(r=>r.Category).filter(Boolean))].sort();
+  const stages = [...new Set(RECORDS.map(r=>r.Value_Chain_Stage).filter(Boolean))].sort();
+  const geos = [...new Set(RECORDS.map(r=>r.Geography).filter(Boolean))].sort();
+  const years = [...new Set(RECORDS.map(r=>r.Publication_Year).filter(Boolean))].sort();
+  const evs = [...new Set(RECORDS.map(r=>r.Evidence_Type).filter(Boolean))].sort();
+  
+  const fill = (selId, opts) => {
+    const sel = document.getElementById(selId);
+    opts.forEach(o => { const opt = document.createElement('option'); opt.value=opt.textContent=o; sel.appendChild(opt); });
+  };
+  fill('exp-cat', cats);
+  fill('exp-stage', stages);
+  fill('exp-geo', geos);
+  fill('exp-year', years);
+  fill('exp-ev', evs);
+  
+  renderExplore();
+}
+
+function getExploreFiltered() {
+  const q = (document.getElementById('exp-search')?.value||'').toLowerCase().trim();
+  const cat = document.getElementById('exp-cat')?.value||'';
+  const stage = document.getElementById('exp-stage')?.value||'';
+  const geo = document.getElementById('exp-geo')?.value||'';
+  const year = document.getElementById('exp-year')?.value||'';
+  const ev = document.getElementById('exp-ev')?.value||'';
+
+  return RECORDS.filter(r => {
+    if (q && !JSON.stringify(r).toLowerCase().includes(q)) return false;
+    if (cat && r.Category !== cat) return false;
+    if (stage && r.Value_Chain_Stage !== stage) return false;
+    if (geo && r.Geography !== geo) return false;
+    if (year && String(r.Publication_Year) !== String(year)) return false;
+    if (ev && r.Evidence_Type !== ev) return false;
+    return true;
+  });
+}
+
+function sortExplore(key) {
+  if (exploreSortKey === key) exploreSortDir *= -1;
+  else { exploreSortKey = key; exploreSortDir = 1; }
+  renderExplore();
+}
+
+function renderExplore() {
+  let filtered = getExploreFiltered();
+  filtered.sort((a,b) => {
+    const av = a[exploreSortKey] ?? ''; const bv = b[exploreSortKey] ?? '';
+    if (typeof av === 'number' && typeof bv === 'number') return (av-bv)*exploreSortDir;
+    return String(av).localeCompare(String(bv)) * exploreSortDir;
+  });
+
+  const total = filtered.length;
+  const start = (explorePage-1)*EXP_PAGE_SIZE;
+  const page = filtered.slice(start, start+EXP_PAGE_SIZE);
+
+  document.getElementById('exp-info').textContent = `Showing ${Math.min(start+1,total)}–${Math.min(start+EXP_PAGE_SIZE,total)} of ${total} record${total!==1?'s':''}`;
+
+  const tbody = document.getElementById('exp-tbody');
+  tbody.innerHTML = page.map(r => {
+    const isKar = isKarnataka(r.Geography);
+    const isGap = r.Evidence_Type === 'Research gap';
+    return `<tr>
+      <td><code style="font-size:11px;color:#6b7280;">${r.Record_ID}</code></td>
+      <td><span class="tag" style="font-size:11px;">${r.Category||'—'}</span></td>
+      <td style="font-size:11px;color:#374151;">${r.Value_Chain_Stage||'—'}</td>
+      <td style="max-width:260px;">${isGap?'<span class="gap-badge">RESEARCH GAP</span> ':''}${r.Metric_or_Finding||'—'}</td>
+      <td style="font-weight:600;color:${isGap?'var(--gap-red)':'var(--green-dark)'};">${isGap?'—':formatValue(r.Value)}</td>
+      <td style="font-size:11px;color:#6b7280;">${r.Unit||'—'}</td>
+      <td>${geoTag(r.Geography)}<br/><span style="font-size:10px;color:#9ca3af;">${r.Geography||'—'}</span></td>
+      <td style="font-size:12px;">${r.Publication_Year||'—'}</td>
+      <td style="font-size:11px;color:#6b7280;">${r.Data_Collection_Period||'—'}</td>
+      <td><span class="${evClass(r.Evidence_Type)}">${evShort(r.Evidence_Type)}</span></td>
+      <td>${sourceLink(r)}</td>
+    </tr>`;
+  }).join('');
+
+  renderPagination('exp-pag', total, explorePage, EXP_PAGE_SIZE, 'goExplorePage');
+}
+
+function clearExploreFilters() {
+  ['exp-search','exp-cat','exp-stage','exp-geo','exp-year','exp-ev'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  explorePage = 1;
+  renderExplore();
+}
+
+function renderPagination(containerId, total, currentPage, pageSize, onPageFnName) {
+  const totalPages = Math.ceil(total / pageSize);
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (totalPages <= 1) { container.innerHTML=''; return; }
+  
+  let html = `<button ${currentPage===1?'disabled':''} onclick="${onPageFnName}(${currentPage-1})">‹ Prev</button>`;
+  const range = getPageRange(currentPage, totalPages);
+  range.forEach(p => {
+    if (p === '…') html += `<button disabled>…</button>`;
+    else html += `<button class="${p===currentPage?'active':''}" onclick="${onPageFnName}(${p})">${p}</button>`;
+  });
+  html += `<button ${currentPage===totalPages?'disabled':''} onclick="${onPageFnName}(${currentPage+1})">Next ›</button>`;
+  html += `<span class="pag-info">Page ${currentPage} of ${totalPages} · ${total} records</span>`;
+  container.innerHTML = html;
+}
+
+function getPageRange(current, total) {
+  if (total <= 7) return Array.from({length:total},(_,i)=>i+1);
+  if (current <= 4) return [1,2,3,4,5,'…',total];
+  if (current >= total-3) return [1,'…',total-4,total-3,total-2,total-1,total];
+  return [1,'…',current-1,current,current+1,'…',total];
+}
+
+// ============================================================
+// GLOBAL SEARCH
+// ============================================================
+function globalSearch(q) {
+  if (q.length < 2) return;
+  document.getElementById('exp-search').value = q;
+  explorePage = 1;
+  goTo('explore');
+}
+
+function doHeroSearch() {
+  const q = document.getElementById('hero-search').value.trim();
+  if (!q) return;
+  globalSearch(q);
+}
+
+// ============================================================
+// HELPER: Render a thematic records table
+// ============================================================
+function renderThematicTable(records, containerId, title) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (records.length === 0) {
+    container.innerHTML += `<div class="note-box">No records found for this category in the dataset.</div>`;
+    return;
+  }
+  const id = 'tbl-' + containerId + '-' + Math.random().toString(36).slice(2,6);
+  container.innerHTML += `
+    <div class="card" style="margin-bottom:16px;">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">${title} <span class="tag">${records.length}</span></h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>ID</th><th>Metric / Finding</th><th>Value</th><th>Unit</th>
+            <th>Geography</th><th>Pub. Year</th><th>Data Period</th><th>Evidence</th><th>Source</th>
+          </tr></thead>
+          <tbody>${records.map(r => {
+            const isGap = r.Evidence_Type === 'Research gap';
+            return `<tr>
+              <td><code style="font-size:11px;color:#6b7280;">${r.Record_ID}</code></td>
+              <td>${isGap?'<span class="gap-badge">GAP</span> ':''}${r.Metric_or_Finding||'—'}</td>
+              <td style="font-weight:600;color:${isGap?'var(--gap-red)':'var(--green-dark)'};">${isGap?'—':formatValue(r.Value)}</td>
+              <td style="font-size:11px;color:#6b7280;">${r.Unit||'—'}</td>
+              <td>${geoTag(r.Geography)}<br/><span style="font-size:10px;color:#9ca3af;">${r.Geography||''}</span></td>
+              <td style="font-size:12px;">${r.Publication_Year||'—'}</td>
+              <td style="font-size:11px;color:#6b7280;">${r.Data_Collection_Period||'—'}</td>
+              <td><span class="${evClass(r.Evidence_Type)}">${evShort(r.Evidence_Type)}</span></td>
+              <td>${sourceLink(r)}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// SECTION 03: FARMER & CULTIVATION
+// ============================================================
+function renderFarmer() {
+  const c = document.getElementById('farmer-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+
+  const stageFilter = ['Farmer / grower', 'Nursery / planting material', 'Primary resource'];
+  const catFilters = ['Cultivation cost','Farm income','Farm production','Farm returns','Farm revenue','Farm-gate price',
+    'Farmer income','Farmer investment','Farmer profile','Harvest economics','Harvest timing','Irrigation cost',
+    'Labour requirement','Land use','Maintenance cost','Plantation design','Plantation pattern','Planting density',
+    'Planting material','Repayment period','Species preference','Study coverage','Resource availability',
+    'Historical farm-gate price','Historical price share'];
+  
+  const groups = [
+    { title:'🗺️ Land Use & Resource Availability', cats:['Resource availability','Land use','Study coverage'] },
+    { title:'🌿 Species & Planting Material', cats:['Species preference','Planting material','Planting density','Plantation design','Plantation pattern'] },
+    { title:'💰 Establishment & Cultivation Costs', cats:['Cultivation cost','Farmer investment','Repayment period','Irrigation cost'] },
+    { title:'🔧 Maintenance Costs', cats:['Maintenance cost'] },
+    { title:'🌾 Harvest Timing & Economics', cats:['Harvest timing','Harvest economics','Farm production'] },
+    { title:'📈 Farm-gate Prices & Revenue', cats:['Farm-gate price','Historical farm-gate price','Farm revenue','Farm returns','Historical price share'] },
+    { title:'💵 Farmer Income & Profitability', cats:['Farmer income','Farm income','Farmer profile'] },
+    { title:'💧 Labour Requirements', cats:['Labour requirement'] },
+    { title:'🏛️ Government Programmes', cats:['Government programme'] },
+  ];
+
+  c.innerHTML = '';
+  groups.forEach(g => {
+    const recs = RECORDS.filter(r => g.cats.includes(r.Category));
+    if (recs.length > 0) renderThematicTable(recs, 'farmer-content', g.title);
+  });
+  
+  // Any remaining farmer-stage records not covered
+  const covered = new Set(groups.flatMap(g => g.cats));
+  const remaining = RECORDS.filter(r => catFilters.includes(r.Category) && !covered.has(r.Category));
+  if (remaining.length > 0) renderThematicTable(remaining, 'farmer-content', '📋 Other Cultivation Records');
+
+  if (!c.innerHTML) c.innerHTML = '<div class="note-box">No cultivation records found.</div>';
+}
+
+// ============================================================
+// SECTION 04: WORKERS & LABOUR
+// ============================================================
+function renderWorkers() {
+  const c = document.getElementById('workers-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+  c.innerHTML = '';
+
+  const groups = [
+    { title:'👥 Labour Profiles & Demographics', cats:['Labour profile','Demographics','Artisan profile'] },
+    { title:'💼 Labour Requirements', cats:['Labour requirement','Work and labour'] },
+    { title:'💰 Labour Costs & Wages', cats:['Labour cost','Harvesting labour','Worker wage availability','Worker wage benchmark'] },
+    { title:'👷 Worker Income', cats:['Worker income','Household income mix'] },
+    { title:'🔨 Agricultural Labour', stages:['Agricultural labour'] },
+    { title:'🪚 Harvesting Labour', stages:['Harvesting / labour'] },
+    { title:'🏭 Processing Work', stages:['Artisan / product making','Processing / treatment','Processing / product development'] },
+  ];
+
+  groups.forEach(g => {
+    let recs;
+    if (g.cats) recs = RECORDS.filter(r => g.cats.includes(r.Category));
+    else recs = RECORDS.filter(r => g.stages.includes(r.Value_Chain_Stage));
+    if (recs.length > 0) renderThematicTable(recs, 'workers-content', g.title);
+  });
+  
+  // Gap note
+  const gapRecs = RECORDS.filter(r => r.Evidence_Type === 'Research gap' && 
+    (r.Category.toLowerCase().includes('labour') || r.Category.toLowerCase().includes('wage') || r.Value_Chain_Stage.toLowerCase().includes('labour')));
+  if (gapRecs.length > 0) {
+    c.innerHTML += `<div class="note-box" style="border-left:4px solid var(--gap-red);">
+      <strong>⚠️ Identified Labour Data Gaps:</strong> The dataset identifies ${gapRecs.length} gap record(s) related to labour information. 
+      These are displayed in the Research Gaps section and in the table above where applicable.
+    </div>`;
+  }
+
+  if (!c.innerHTML || c.innerHTML.trim() === '') c.innerHTML = '<div class="note-box">No labour records found in the dataset.</div>';
+}
+
+// ============================================================
+// SECTION 05: TRANSPORTATION & LOGISTICS
+// ============================================================
+function renderTransport() {
+  const c = document.getElementById('transport-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+  c.innerHTML = '';
+
+  const groups = [
+    { title:'🚛 Transport Costs', cats:['Transport cost','Historical transport cost','Transport cost share'] },
+    { title:'📦 Marketing Costs & Channels', cats:['Marketing channel','Historical marketing cost'] },
+    { title:'🏪 Market Challenges', cats:['Market challenges'] },
+    { title:'🔗 Value Chain Structure', cats:['Value-chain structure'] },
+    { title:'📊 Raw Material Sourcing', cats:['Raw-material sourcing'] },
+  ];
+
+  const transportStages = ['Transport / market','Trader / market','Market infrastructure'];
+  
+  groups.forEach(g => {
+    const recs = RECORDS.filter(r => g.cats.includes(r.Category));
+    if (recs.length > 0) renderThematicTable(recs, 'transport-content', g.title);
+  });
+
+  const stageRecs = RECORDS.filter(r => transportStages.includes(r.Value_Chain_Stage) && 
+    !['Transport cost','Historical transport cost','Transport cost share','Marketing channel','Historical marketing cost','Market challenges','Value-chain structure','Raw-material sourcing'].includes(r.Category));
+  if (stageRecs.length > 0) renderThematicTable(stageRecs, 'transport-content', '🗺️ Other Transport / Market Stage Records');
+
+  c.innerHTML += `<div class="note-box" style="margin-top:16px;border-left:4px solid var(--warning);">
+    <strong>⚠️ Data Limitation:</strong> Current transportation charges for bamboo movement in Karnataka are not documented in this dataset. 
+    Historical transport costs from Maharashtra (Sindhudurg region) exist but cannot be assumed to apply to Karnataka. 
+    See Research Gaps section for details.
+  </div>`;
+}
+
+// ============================================================
+// SECTION 06: MARKET & PRODUCTS
+// ============================================================
+function renderMarket() {
+  const c = document.getElementById('market-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+  c.innerHTML = '';
+
+  const groups = [
+    { title:'💰 Market Prices – Raw Bamboo', cats:['Historical market price','Farm-gate price','Historical farm-gate price','Historical price spread','Historical price share'] },
+    { title:'🛍️ Value Addition & Product Pricing', cats:['Value addition price','Value-chain structure'] },
+    { title:'🏪 Marketing Channels & Structure', cats:['Marketing channel','Market challenges'] },
+    { title:'🏭 Processing & Manufacturing', stages:['Processing / product development','Processing / treatment','Processor / market'] },
+    { title:'🎨 Artisan & Craft Products', stages:['Artisan / product making','Artisan / market'] },
+    { title:'📊 Collector / Sourcing Stage', stages:['Collector / sourcing'] },
+  ];
+
+  groups.forEach(g => {
+    let recs;
+    if (g.cats) recs = RECORDS.filter(r => g.cats.includes(r.Category));
+    else recs = RECORDS.filter(r => g.stages.includes(r.Value_Chain_Stage));
+    if (recs.length > 0) renderThematicTable(recs, 'market-content', g.title);
+  });
+}
+
+// ============================================================
+// SECTION 07: VALUE CHAIN VISUALIZATION
+// ============================================================
+const VC_STAGES = [
+  { key:'Primary resource', label:'Primary Resource', icon:'🌍', desc:'National and Karnataka bamboo resource base – area, stock and availability.' },
+  { key:'Nursery / planting material', label:'Nursery & Planting', icon:'🌱', desc:'Planting material, nursery costs, seedling and rhizome preparation.' },
+  { key:'Farmer / grower', label:'Farmer / Cultivation', icon:'🧑‍🌾', desc:'Plantation establishment, maintenance costs, harvesting economics and farmer income.' },
+  { key:'Harvesting / labour', label:'Harvesting & Labour', icon:'🌾', desc:'Harvesting timing, labour requirements, cutting methods and labour costs.' },
+  { key:'Agricultural labour', label:'Agricultural Labour', icon:'👷', desc:'Agricultural labour workforce data, demographics and income.' },
+  { key:'Transport / market', label:'Transport & Market', icon:'🚛', desc:'Transportation from farms to processing units and markets.' },
+  { key:'Trader / market', label:'Trader & Market', icon:'🤝', desc:'Traders, raw bamboo markets, price formation and market challenges.' },
+  { key:'Processor / market', label:'Processor & Market', icon:'🏭', desc:'Bamboo processing units, product development and market linkages.' },
+  { key:'Processing / treatment', label:'Processing / Treatment', icon:'⚙️', desc:'Physical and chemical treatment of bamboo culms for further use.' },
+  { key:'Processing / product development', label:'Product Development', icon:'🛠️', desc:'Value addition, product design and manufacturing.' },
+  { key:'Artisan / product making', label:'Artisan Production', icon:'🎨', desc:'Artisan-based bamboo product making, income and working conditions.' },
+  { key:'Artisan / market', label:'Artisan Market', icon:'🏪', desc:'Artisan product markets, pricing and marketing challenges.' },
+  { key:'Collector / sourcing', label:'Collector / Sourcing', icon:'📦', desc:'Raw material collection and sourcing logistics.' },
+  { key:'Value chain model', label:'Value Chain Model', icon:'🔗', desc:'Integrated value chain structure and actor relationships.' },
+  { key:'Multiple value-chain actors', label:'Multi-Actor', icon:'🌐', desc:'Findings spanning multiple value chain actors.' },
+  { key:'Market infrastructure', label:'Market Infrastructure', icon:'🏗️', desc:'Market infrastructure gaps and development needs.' },
+];
+
+let activeVCStage = null;
+
+function renderVC() {
+  const c = document.getElementById('vc-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+
+  // Main simplified flow (key stages in visual order)
+  const mainFlow = [
+    { key:'Primary resource', label:'Land & Resource', icon:'🌍' },
+    { key:'Farmer / grower', label:'Cultivation', icon:'🧑‍🌾' },
+    { key:'Harvesting / labour', label:'Harvesting', icon:'🌾' },
+    { key:'Transport / market', label:'Transport', icon:'🚛' },
+    { key:'Processor / market', label:'Processing', icon:'🏭' },
+    { key:'Artisan / market', label:'Market & End Use', icon:'🛒' },
+  ];
+
+  c.innerHTML = `
+    <div class="info-box" style="margin-bottom:20px;">
+      Click any stage below to see connected research findings. Stages with limited data are marked with a research gap indicator.
+    </div>
+    <div class="vc-flow">
+      ${mainFlow.map((s,i) => {
+        const recs = RECORDS.filter(r => r.Value_Chain_Stage === s.key);
+        const hasGap = recs.some(r => r.Evidence_Type === 'Research gap') || recs.length === 0;
+        return `
+          <div class="vc-stage" id="vc-s-${i}" onclick="toggleVCStage(${i})">
+            <div class="vc-icon">${s.icon}</div>
+            <div class="vc-name">${s.label}</div>
+            <div style="margin-top:6px;font-size:11px;color:#6b7280;">${recs.length} record${recs.length!==1?'s':''}</div>
+            ${hasGap ? '<div class="gap-badge" style="margin-top:4px;">Gap identified</div>' : ''}
+          </div>
+          ${i < mainFlow.length-1 ? '<div class="vc-arrow">→</div>' : ''}
+        `;
+      }).join('')}
+    </div>
+    <div id="vc-details"></div>
+    
+    <div style="margin-top:28px;">
+      <h3 style="font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">All Value Chain Stages</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+        ${VC_STAGES.map(s => {
+          const recs = RECORDS.filter(r => r.Value_Chain_Stage === s.key);
+          return `<div class="card card-sm" style="cursor:default;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:18px;">${s.icon}</span>
+              <span style="font-weight:700;font-size:13px;color:var(--green-dark);">${s.label}</span>
+              <span class="tag" style="margin-left:auto;">${recs.length}</span>
+            </div>
+            <p style="font-size:11.5px;color:#6b7280;">${s.desc}</p>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  window._vcMainFlow = mainFlow;
+}
+
+function toggleVCStage(idx) {
+  const flow = window._vcMainFlow;
+  if (!flow) return;
+  const stage = flow[idx];
+  const recs = RECORDS.filter(r => r.Value_Chain_Stage === stage.key);
+  const detailDiv = document.getElementById('vc-details');
+  
+  document.querySelectorAll('.vc-stage').forEach((el,i) => {
+    el.classList.toggle('active', i === idx);
+  });
+
+  if (recs.length === 0) {
+    detailDiv.innerHTML = `<div class="vc-detail active">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);">${stage.icon} ${stage.label}</h3>
+      <div class="gap-badge" style="margin:12px 0;">RESEARCH GAP – No records available for this stage</div>
+      <p style="font-size:13px;color:#6b7280;">This stage has no records in the current dataset. Field research is required to document findings at this stage of the bamboo value chain.</p>
+    </div>`;
+    return;
+  }
+  
+  detailDiv.innerHTML = `<div class="vc-detail active">
+    <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">${stage.icon} ${stage.label} – ${recs.length} records</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Metric / Finding</th><th>Value</th><th>Unit</th><th>Geography</th><th>Evidence</th><th>Source</th></tr></thead>
+        <tbody>${recs.map(r => {
+          const isGap = r.Evidence_Type === 'Research gap';
+          return `<tr>
+            <td><code style="font-size:11px;">${r.Record_ID}</code></td>
+            <td>${isGap?'<span class="gap-badge">GAP</span> ':''}${r.Metric_or_Finding||'—'}</td>
+            <td style="font-weight:600;color:${isGap?'var(--gap-red)':'var(--green-dark)'};">${isGap?'—':formatValue(r.Value)}</td>
+            <td style="font-size:11px;color:#6b7280;">${r.Unit||'—'}</td>
+            <td>${geoTag(r.Geography)}</td>
+            <td><span class="${evClass(r.Evidence_Type)}">${evShort(r.Evidence_Type)}</span></td>
+            <td>${sourceLink(r)}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// SECTION 08: COMPARE DATA
+// ============================================================
+let compareChart = null;
+function renderCompare() {
+  const c = document.getElementById('compare-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+
+  // Compare topics
+  const topics = [
+    { 
+      id:'geo', 
+      label:'Geography: Karnataka vs Other States', 
+      desc:'Compare record distribution by geography',
+      type:'geo'
+    },
+    {
+      id:'cost',
+      label:'Establishment / Cultivation Costs by Region',
+      desc:'Compare bamboo plantation establishment costs across studies and regions',
+      type:'cost'
+    },
+    {
+      id:'price',
+      label:'Bamboo Prices Across Geographies',
+      desc:'Compare farm-gate and market prices. Only records with similar unit measures are shown.',
+      type:'price'
+    },
+    {
+      id:'year',
+      label:'Records by Publication Year',
+      desc:'See how research coverage has evolved over time',
+      type:'year'
+    },
+  ];
+
+  c.innerHTML = `
+    <div class="compare-select">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:10px;">Select Comparison</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        ${topics.map(t => `<button class="btn btn-outline" id="cmp-btn-${t.id}" onclick="runCompare('${t.id}')">${t.label}</button>`).join('')}
+      </div>
+    </div>
+    <div id="compare-result"></div>
+  `;
+  
+  runCompare('geo');
+}
+
+function runCompare(topicId) {
+  const result = document.getElementById('compare-result');
+  document.querySelectorAll('[id^=cmp-btn-]').forEach(b => b.className = 'btn btn-outline');
+  const btn = document.getElementById('cmp-btn-' + topicId);
+  if (btn) btn.className = 'btn btn-primary';
+
+  if (topicId === 'geo') {
+    const karRecs = RECORDS.filter(r => isKarnataka(r.Geography));
+    const otherRecs = RECORDS.filter(r => !isKarnataka(r.Geography));
+    
+    // Stage distribution
+    const karStages = {}; karRecs.forEach(r => { karStages[r.Value_Chain_Stage] = (karStages[r.Value_Chain_Stage]||0)+1; });
+    const otherStages = {}; otherRecs.forEach(r => { otherStages[r.Value_Chain_Stage] = (otherStages[r.Value_Chain_Stage]||0)+1; });
+    const allStages = [...new Set([...Object.keys(karStages),...Object.keys(otherStages)])].sort();
+
+    result.innerHTML = `
+      <div class="note-box">
+        <strong>Comparison: Karnataka (${karRecs.length} records) vs Other Regions (${otherRecs.length} records)</strong><br/>
+        Note: "Other Regions" includes national-level Indian data, Maharashtra, Kerala, Bihar and other states. Statistics from other states should not be assumed to apply to Karnataka.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="card">
+          <h4 style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:8px;">🌿 Karnataka Records (${karRecs.length})</h4>
+          ${Object.entries(karStages).sort((a,b)=>b[1]-a[1]).map(([s,c])=>`
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;font-size:12px;">
+              <span>${s}</span><span class="tag karnataka">${c}</span>
+            </div>`).join('')}
+        </div>
+        <div class="card">
+          <h4 style="font-size:13px;font-weight:700;color:#1e3a8a;margin-bottom:8px;">🌐 Other Regions (${otherRecs.length})</h4>
+          ${Object.entries(otherStages).sort((a,b)=>b[1]-a[1]).map(([s,c])=>`
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;font-size:12px;">
+              <span>${s}</span><span class="tag blue">${c}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <h4 style="font-size:13px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">Stage Distribution Comparison (Chart)</h4>
+        <canvas id="cmp-geo-chart" style="max-height:300px;"></canvas>
+      </div>
+    `;
+
+    setTimeout(() => {
+      const ctx = document.getElementById('cmp-geo-chart')?.getContext('2d');
+      if (!ctx) return;
+      if (compareChart) compareChart.destroy();
+      compareChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: allStages,
+          datasets: [
+            { label: 'Karnataka', data: allStages.map(s=>karStages[s]||0), backgroundColor: '#40916c', borderRadius:4 },
+            { label: 'Other Regions', data: allStages.map(s=>otherStages[s]||0), backgroundColor: '#93c5fd', borderRadius:4 },
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true } },
+          scales: { x:{grid:{display:false}}, y:{grid:{display:false},ticks:{font:{size:10}}} }
+        }
+      });
+      document.getElementById('cmp-geo-chart').style.height = (allStages.length * 30 + 50) + 'px';
+    }, 100);
+
+  } else if (topicId === 'cost') {
+    const costRecs = RECORDS.filter(r => ['Cultivation cost','Maintenance cost','Irrigation cost','Farmer investment'].includes(r.Category));
+    result.innerHTML = `
+      <div class="note-box">
+        <strong>⚠️ Comparison Limitation:</strong> Cultivation cost figures come from different studies, regions and years. Units, scope and cost components may vary. Direct arithmetic comparison is not valid. Figures are displayed side-by-side for reference only.
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Category</th><th>Metric</th><th>Value</th><th>Unit</th><th>Geography</th><th>Publication Year</th><th>Evidence</th><th>Source</th></tr></thead>
+          <tbody>${costRecs.map(r => {
+            return `<tr>
+              <td><code style="font-size:11px;">${r.Record_ID}</code></td>
+              <td><span class="tag" style="font-size:11px;">${r.Category}</span></td>
+              <td>${r.Metric_or_Finding||'—'}</td>
+              <td style="font-weight:600;color:var(--green-dark);">${formatValue(r.Value)}</td>
+              <td style="font-size:11px;color:#6b7280;">${r.Unit||'—'}</td>
+              <td>${geoTag(r.Geography)}<br/><span style="font-size:10px;color:#9ca3af;">${r.Geography||''}</span></td>
+              <td>${r.Publication_Year||'—'}</td>
+              <td><span class="${evClass(r.Evidence_Type)}">${evShort(r.Evidence_Type)}</span></td>
+              <td>${sourceLink(r)}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (topicId === 'price') {
+    const priceRecs = RECORDS.filter(r => ['Farm-gate price','Historical farm-gate price','Historical market price','Value addition price','Historical price spread','Historical price share'].includes(r.Category));
+    result.innerHTML = `
+      <div class="note-box">
+        <strong>⚠️ Price Comparison Note:</strong> Prices are drawn from different years, regions and study types. 
+        Historical prices (from published studies) may not reflect current market conditions. 
+        Karnataka-specific current market prices are a documented research gap.
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Category</th><th>Metric</th><th>Value</th><th>Unit</th><th>Geography</th><th>Data Period</th><th>Evidence</th><th>Source</th></tr></thead>
+          <tbody>${priceRecs.map(r => {
+            return `<tr>
+              <td><code style="font-size:11px;">${r.Record_ID}</code></td>
+              <td><span class="tag" style="font-size:11px;">${r.Category}</span></td>
+              <td>${r.Metric_or_Finding||'—'}</td>
+              <td style="font-weight:600;color:var(--green-dark);">${formatValue(r.Value)}</td>
+              <td style="font-size:11px;color:#6b7280;">${r.Unit||'—'}</td>
+              <td>${geoTag(r.Geography)}<br/><span style="font-size:10px;color:#9ca3af;">${r.Geography||''}</span></td>
+              <td style="font-size:11px;color:#6b7280;">${r.Data_Collection_Period||'—'}</td>
+              <td><span class="${evClass(r.Evidence_Type)}">${evShort(r.Evidence_Type)}</span></td>
+              <td>${sourceLink(r)}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (topicId === 'year') {
+    const yearCounts = {};
+    RECORDS.forEach(r => { 
+      const y = String(r.Publication_Year||'Unknown'); 
+      yearCounts[y] = (yearCounts[y]||0)+1; 
+    });
+    const years = Object.entries(yearCounts).sort((a,b) => a[0].localeCompare(b[0]));
+    
+    result.innerHTML = `
+      <div class="card" style="margin-bottom:16px;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--green-dark);margin-bottom:12px;">Records by Publication Year</h4>
+        <canvas id="cmp-year-chart" style="max-height:300px;"></canvas>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Publication Year</th><th>Record Count</th><th>% of Dataset</th></tr></thead>
+          <tbody>${years.map(([y,c]) => `<tr>
+            <td><strong>${y}</strong></td>
+            <td><span class="tag">${c}</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="background:var(--green-pale);border-radius:4px;height:10px;width:${Math.round(c/RECORDS.length*100)}%;min-width:4px;background:var(--green-mid);"></div>
+                <span style="font-size:12px;">${(c/RECORDS.length*100).toFixed(1)}%</span>
+              </div>
+            </td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    `;
+    
+    setTimeout(() => {
+      const ctx = document.getElementById('cmp-year-chart')?.getContext('2d');
+      if (!ctx) return;
+      if (compareChart) compareChart.destroy();
+      compareChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: years.map(([y])=>y),
+          datasets: [{ label:'Records', data:years.map(([,c])=>c), backgroundColor:'#40916c', borderRadius:6 }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{legend:{display:false}},
+          scales:{x:{grid:{display:false}},y:{grid:{color:'#f3f4f6'},beginAtZero:true}}
+        }
+      });
+      document.getElementById('cmp-year-chart').style.height = '250px';
+    }, 100);
+  }
+}
+
+// ============================================================
+// SECTION 09: RESEARCH GAPS
+// ============================================================
+function renderGaps() {
+  const c = document.getElementById('gaps-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+
+  // Official gap records from dataset
+  const gapRecs = RECORDS.filter(r => r.Evidence_Type === 'Research gap');
+  
+  // Additional contextual gaps (from dataset interpretation & limitations fields)
+  const impliedGaps = [
+    {
+      title: 'Current Karnataka bamboo farmer income / net profit',
+      stage: 'Farmer / grower',
+      importance: 'Without verified income data, it is impossible to assess whether bamboo cultivation is financially viable for Karnataka farmers or to design effective support programmes.',
+      research: 'Field survey of 50–100 bamboo-growing farmers across Karnataka districts, recording full cost and revenue accounts.',
+    },
+    {
+      title: 'Bamboo-specific harvesting labour wages in Karnataka',
+      stage: 'Harvesting / labour',
+      importance: 'Harvesting is a major cost component. Without bamboo-specific wage data, cost models for Karnataka farms cannot be validated.',
+      research: 'Wage survey in key bamboo-growing taluks of Uttara Kannada, Shimoga and Chikmagalur.',
+    },
+    {
+      title: 'Current transportation charges farm-to-market in Karnataka',
+      stage: 'Transport / market',
+      importance: 'Transportation cost is a significant determinant of farmer net income. No current Karnataka figures exist in the dataset.',
+      research: 'Logistics cost survey along key bamboo transport routes in Karnataka (Sirsi–Hubli, Dandeli–Dharwad corridors).',
+    },
+    {
+      title: 'Actual maintenance expenditure per acre – Karnataka farmers',
+      stage: 'Farmer / grower',
+      importance: 'Government benchmarks (NABARD schedules) exist but actual farmer spending patterns may differ significantly.',
+      research: 'Cross-sectional survey of established bamboo plantations (3+ years old) in Karnataka.',
+    },
+    {
+      title: 'Current bamboo culm prices at local Karnataka markets',
+      stage: 'Trader / market',
+      importance: 'Market price is the primary revenue driver. The dataset contains historical prices from other states but no current Karnataka market data.',
+      research: 'Market price monitoring at forest produce markets in Sirsi, Haliyal, Mundgod and Dandeli for one full season.',
+    },
+  ];
+
+  c.innerHTML = `
+    <div class="note-box" style="margin-bottom:20px;">
+      This section combines <strong>${gapRecs.length} officially documented research gaps</strong> from the dataset records and additional gaps identified from interpretation notes in the dataset. 
+      No estimates have been used to fill these gaps.
+    </div>
+    
+    <h2 style="font-size:16px;font-weight:700;color:var(--green-dark);margin-bottom:14px;">📋 Documented Research Gaps (from Dataset)</h2>
+    ${gapRecs.map(r => `
+      <div class="gap-card">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <span class="gap-badge" style="flex-shrink:0;">RESEARCH GAP</span>
+          <div>
+            <h4 style="font-size:14px;font-weight:700;color:var(--text-dark);">${r.Metric_or_Finding}</h4>
+            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;">
+              <span class="tag gray" style="font-size:11px;">Stage: ${r.Value_Chain_Stage}</span>
+              <span class="tag gray" style="font-size:11px;">Category: ${r.Category}</span>
+              ${geoTag(r.Geography)}
+              <span class="tag gray" style="font-size:11px;">Record: ${r.Record_ID}</span>
+            </div>
+            ${r.Interpretation_and_Limitations ? `<p style="margin-top:8px;font-size:12.5px;color:#374151;">${r.Interpretation_and_Limitations}</p>` : ''}
+            ${r.Website_Display_Guidance ? `<p style="margin-top:4px;font-size:12px;color:#6b7280;font-style:italic;">${r.Website_Display_Guidance}</p>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('')}
+    
+    <h2 style="font-size:16px;font-weight:700;color:var(--green-dark);margin:24px 0 14px;">🔍 Additional Gaps Identified from Dataset Analysis</h2>
+    <div class="info-box" style="margin-bottom:16px;">
+      These gaps are inferred from interpretation notes and limitations documented in the dataset. They represent areas where the existing dataset confirms information is unavailable, not assumptions made by this platform.
+    </div>
+    ${impliedGaps.map((g,i) => `
+      <div class="gap-card" style="margin-bottom:12px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <span style="font-size:18px;flex-shrink:0;">🔍</span>
+          <div>
+            <h4 style="font-size:14px;font-weight:700;color:var(--text-dark);">${g.title}</h4>
+            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;">
+              <span class="tag gray" style="font-size:11px;">Value Chain Stage: ${g.stage}</span>
+            </div>
+            <div style="margin-top:10px;">
+              <strong style="font-size:12px;color:var(--green-dark);">Why it matters:</strong>
+              <p style="font-size:12.5px;color:#374151;margin-top:3px;">${g.importance}</p>
+            </div>
+            <div style="margin-top:8px;">
+              <strong style="font-size:12px;color:var(--green-dark);">Suggested field research:</strong>
+              <p style="font-size:12.5px;color:#374151;margin-top:3px;">${g.research}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ============================================================
+// SECTION 10: SOURCES & REFERENCES
+// ============================================================
+function renderSources() {
+  const c = document.getElementById('sources-content');
+  if (c.dataset.done) return;
+  c.dataset.done = '1';
+
+  // Count records per source
+  const srcRecCount = {};
+  RECORDS.forEach(r => { srcRecCount[r.Source_ID] = (srcRecCount[r.Source_ID]||0)+1; });
+  
+  const typeIcons = {
+    'Government report': '🏛️',
+    'Government inventory': '🏛️',
+    'Research paper': '📄',
+    'Policy report': '📋',
+    'News report': '📰',
+    'Technical guideline': '⚙️',
+    'Programme document': '📝',
+    'Field study': '🔬',
+    'NABARD report': '🏦',
+    'Academic study': '🎓',
+  };
+
+  c.innerHTML = `
+    <div class="note-box" style="margin-bottom:20px;">
+      All ${SOURCES.length} sources below are the primary references used in this research dataset. 
+      Click any URL to verify the source independently. All URLs were verified at time of dataset creation.
+    </div>
+    
+    <div class="filter-row">
+      <input class="flt" id="src-search" type="text" placeholder="🔍 Search sources…" oninput="filterSources()" style="min-width:200px;"/>
+    </div>
+    
+    <div id="src-list" style="display:grid;gap:12px;"></div>
+  `;
+
+  renderSourceList(SOURCES);
+  
+  document.getElementById('src-search').addEventListener('input', filterSources);
+}
+
+function filterSources() {
+  const q = (document.getElementById('src-search')?.value||'').toLowerCase().trim();
+  const filtered = q ? SOURCES.filter(s => 
+    JSON.stringify(s).toLowerCase().includes(q)
+  ) : SOURCES;
+  renderSourceList(filtered);
+}
+
+function renderSourceList(list) {
+  const srcRecCount = {};
+  RECORDS.forEach(r => { srcRecCount[r.Source_ID] = (srcRecCount[r.Source_ID]||0)+1; });
+
+  document.getElementById('src-list').innerHTML = list.map(s => {
+    const url = s.Source_URL;
+    const hasUrl = url && url !== '—' && url !== 'None' && url !== 'null';
+    const recCount = srcRecCount[s.Source_ID] || 0;
+    const relatedRecs = RECORDS.filter(r => r.Source_ID === s.Source_ID);
+    const kStats = relatedRecs.filter(r => isKarnataka(r.Geography)).length;
+    
+    return `<div class="source-card">
+      <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:280px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+            <code style="font-size:11px;background:#f3f4f6;padding:2px 6px;border-radius:4px;">${s.Source_ID}</code>
+            <span class="tag gray" style="font-size:11px;">${s.Source_Type||'Source'}</span>
+            ${kStats > 0 ? `<span class="tag karnataka" style="font-size:11px;">${kStats} Karnataka records</span>` : ''}
+            <span class="tag" style="font-size:11px;">${recCount} record${recCount!==1?'s':''} in dataset</span>
+          </div>
+          <h3 style="font-size:14px;font-weight:700;color:var(--text-dark);line-height:1.4;">${s.Title||'—'}</h3>
+          <p style="font-size:12px;color:#6b7280;margin-top:4px;">
+            <strong>${s.Authors_or_Publisher||'—'}</strong>
+            ${s.Publication_Year ? ` · ${s.Publication_Year}` : ''}
+          </p>
+          ${s.Page_Table_or_Location ? `<p style="font-size:11px;color:#9ca3af;margin-top:3px;">📍 ${s.Page_Table_or_Location}</p>` : ''}
+          ${s.Source_Quality_and_Usage_Notes ? `<p style="font-size:11.5px;color:#374151;margin-top:6px;font-style:italic;">${s.Source_Quality_and_Usage_Notes}</p>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          ${hasUrl ? 
+            `<a href="${url}" class="btn btn-primary btn-sm" target="_blank" rel="noopener" style="text-decoration:none;">
+              🔗 Open Source ↗
+            </a>` : 
+            `<span class="btn btn-outline btn-sm" style="cursor:default;opacity:0.5;">No URL Available</span>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function goExplorePage(p) { explorePage = p; renderExplore(); }
+
+function closeSidebarMobile() {
+  document.getElementById('sidebar').classList.remove('show');
+  document.getElementById('sb-overlay').style.display = 'none';
+}
+
+function exportCSV() {
+  const filtered = getExploreFiltered();
+  const cols = ['Record_ID','Category','Value_Chain_Stage','Metric_or_Finding','Value','Unit','Geography',
+    'Data_Collection_Period','Publication_Year','Evidence_Type','Source_ID','Interpretation_and_Limitations','Source_URL'];
+  const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const rows = [cols.join(',')].concat(filtered.map(r => cols.map(c => esc(r[c])).join(',')));
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bamboo_research_data.csv';
+  a.click();
+}
+
+// ============================================================
+// GLOBAL SEARCH HANDLER
+// ============================================================
+function globalSearchHandler() {
+  document.getElementById('global-search').addEventListener('input', function() {
+    const q = this.value.trim();
+    if (q.length >= 2) {
+      document.getElementById('exp-search').value = q;
+      explorePage = 1;
+      goTo('explore');
+    }
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  buildNav();
+  renderHome();
+  globalSearchHandler();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

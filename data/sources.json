@@ -1,0 +1,162 @@
+[
+  {
+    "Source_ID": "S01",
+    "Authors_or_Publisher": "Forest Survey of India, Ministry of Environment, Forest and Climate Change",
+    "Title": "India State of Forest Report 2023, Volume I",
+    "Publication_Year": 2023,
+    "Source_Type": "Government report",
+    "Source_URL": "https://fsi.nic.in/uploads/isfr2023/isfr_book_eng-vol-1_2023.pdf",
+    "Page_Table_or_Location": "Bamboo Bearing Area, printed p.165",
+    "Source_Quality_and_Usage_Notes": "Bamboo-bearing area is estimated from inventory plots; it is not commercial harvestable stock."
+  },
+  {
+    "Source_ID": "S02",
+    "Authors_or_Publisher": "Venkatesh L. et al.",
+    "Title": "Value chain analysis of Bamboo based products in Mundgod and Haliyal Taluk of Uttara Kannada District of Karnataka",
+    "Publication_Year": 2024,
+    "Source_Type": "Journal article",
+    "Source_URL": "https://agriinventionjournal.com/index.php/ijai/article/view/473",
+    "Page_Table_or_Location": "Abstract; Vol.9(2), pp.166–171; DOI 10.46492/IJAI/2024.9.2.25",
+    "Source_Quality_and_Usage_Notes": "Primary and secondary data from 2023–24. Percentages refer to the study sample, not all Karnataka."
+  },
+  {
+    "Source_ID": "S03",
+    "Authors_or_Publisher": "Pawar, Suprita; Chitagubbi, Geeta; Desai, Rajeshwari",
+    "Title": "Socio-Economic Status of Bamboo Artisans of Karnataka, India",
+    "Publication_Year": 2023,
+    "Source_Type": "Journal article",
+    "Source_URL": "https://doi.org/10.9734/ajaees/2023/v41i71935",
+    "Page_Table_or_Location": "Abstract; fieldwork 2019–2020; DOI 10.9734/ajaees/2023/v41i71935",
+    "Source_Quality_and_Usage_Notes": "120 artisan families in Dharwad, Belagavi and Uttara Kannada. Abstract does not provide exact percentages for several findings."
+  },
+  {
+    "Source_ID": "S04",
+    "Authors_or_Publisher": "Tahera Arjumand and B. Renuka Rani, MANAGE",
+    "Title": "Case Study on Bamboo Farming",
+    "Publication_Year": 2023,
+    "Source_Type": "Institutional research report",
+    "Source_URL": "https://www.manage.gov.in/publications/reports/internreports/Taher%20Arjumand%20Bamboo%20Case%20Study%20Final.pdf",
+    "Page_Table_or_Location": "Sindhudurg results and economics tables, pp.64–73",
+    "Source_Quality_and_Usage_Notes": "Field interviews in Maharashtra. Projections are not guaranteed returns. Farmer annual income is total income, not bamboo-only income."
+  },
+  {
+    "Source_ID": "S05",
+    "Authors_or_Publisher": "Bhosale, S.S.; Akhare, A.S.; Tambat, S.G.",
+    "Title": "Economics of production and disposal of bamboo in Sindhudurg District",
+    "Publication_Year": 2024,
+    "Source_Type": "Journal article",
+    "Source_URL": "https://www.scinovex.com/articles/W4391363533",
+    "Page_Table_or_Location": "Abstract; International Journal of Agriculture Extension and Social Development, 7(1), pp.669–673",
+    "Source_Quality_and_Usage_Notes": "Sample 60 growers; data relate to 2018–19. Separate study from MANAGE report."
+  },
+  {
+    "Source_ID": "S06",
+    "Authors_or_Publisher": "Labour Bureau, Ministry of Labour and Employment, Government of India",
+    "Title": "Rural Wages: occupation-wise wage-rate data",
+    "Publication_Year": "Live official dataset; accessed 22 Nov 2026",
+    "Source_Type": "Government statistical database",
+    "Source_URL": "https://www.labourbureau.gov.in/rural-wages",
+    "Page_Table_or_Location": "Karnataka wage rows for Jan 2024–25 and Jan 2025–26",
+    "Source_Quality_and_Usage_Notes": "Occupational benchmarks, not necessarily bamboo-only earnings. @ and dash mean unavailable, not zero."
+  },
+  {
+    "Source_ID": "S07",
+    "Authors_or_Publisher": "Pavithra, G.M.; Venkataramana, G.V.; Subbanna, S.",
+    "Title": "Bamboo-based traditional bamboo market systems enhance rural livelihoods and ecosystem resilience in Karnataka",
+    "Publication_Year": 2026,
+    "Source_Type": "Peer-reviewed open-access journal article",
+    "Source_URL": "https://www.frontiersin.org/journals/ecology-and-evolution/articles/10.3389/fevo.2026.1869314/full",
+    "Page_Table_or_Location": "Frontiers in Ecology and Evolution 14:1869314; published 31 July 2026",
+    "Source_Quality_and_Usage_Notes": "Recent Karnataka study. Product-price table has ambiguous year labels; those prices are excluded. Use reported survey findings cautiously."
+  },
+  {
+    "Source_ID": "S08",
+    "Authors_or_Publisher": "Press Information Bureau, Government of India",
+    "Title": "Achievements of National Bamboo Mission",
+    "Publication_Year": 2025,
+    "Source_Type": "Government programme progress",
+    "Source_URL": "https://www.pib.gov.in/PressNoteDetails.aspx?ModuleId=3&NoteId=155112&id=155112&lang=2&reg=3",
+    "Page_Table_or_Location": "Physical progress as of 31 Dec 2024; PIB note 29 Aug 2025",
+    "Source_Quality_and_Usage_Notes": "National figures, not Karnataka-only. Outputs do not prove income or impact."
+  },
+  {
+    "Source_ID": "S09",
+    "Authors_or_Publisher": "Jayasankar, B. and Muraleedharan, P.K.",
+    "Title": "Efficiency of Agroforestry Product Markets in India: A Comparative Study of Bamboo and Wood Markets",
+    "Publication_Year": 2000,
+    "Source_Type": "Journal article",
+    "Source_URL": "https://ageconsearch.umn.edu/record/297733/files/ijae-364.pdf",
+    "Page_Table_or_Location": "Indian Journal of Agricultural Economics 55(2), Apr–Jun 2000; Table 4; market data 1994–95",
+    "Source_Quality_and_Usage_Notes": "Historical Palakkad costs per truckload; never present as current freight prices."
+  },
+  {
+    "Source_ID": "S10",
+    "Authors_or_Publisher": "Renu, Ankita and Sandhya Rani",
+    "Title": "Analysis of Demographic and Work Profile of Rural Bamboo Handicraft Workers",
+    "Publication_Year": 2022,
+    "Source_Type": "Journal article",
+    "Source_URL": "https://doi.org/10.9734/ajaees/2022/v40i111695",
+    "Page_Table_or_Location": "Pusa Block, Samastipur, Bihar; survey Feb–May 2022; 120 workers",
+    "Source_Quality_and_Usage_Notes": "Study-specific worker earnings; not Karnataka and not a formal wage rate."
+  },
+  {
+    "Source_ID": "S11",
+    "Authors_or_Publisher": "National Bank for Agriculture and Rural Development (NABARD)",
+    "Title": "Unit Cost 2025–26: Bamboo cultivation, Annexure IV",
+    "Publication_Year": 2025,
+    "Source_Type": "Official bankable unit-cost schedule",
+    "Source_URL": "https://www.nabard.org/auth/writereaddata/tender/pub_0906250343141572.pdf",
+    "Page_Table_or_Location": "Annexure IV, Agroforestry and Wasteland Development, page 41",
+    "Source_Quality_and_Usage_Notes": "Planning/unit-cost benchmark for 1 hectare; not a measured farmer's actual expenditure. Costs are schedule assumptions."
+  },
+  {
+    "Source_ID": "S12",
+    "Authors_or_Publisher": "Indian Council of Forestry Research and Education (ICFRE)",
+    "Title": "Species Specific FAQs / FAQs on Agroforestry",
+    "Publication_Year": 2022,
+    "Source_Type": "Government research institute publication",
+    "Source_URL": "https://www.icfre.gov.in/pdf/books-file/book27.pdf",
+    "Page_Table_or_Location": "FAQs on Agroforestry, Q20–Q22, printed page 109",
+    "Source_Quality_and_Usage_Notes": "General technical/economic estimates; species, location, management and market affect results. Not Karnataka-specific farm survey."
+  },
+  {
+    "Source_ID": "S13",
+    "Authors_or_Publisher": "Shende, N.V.; Dangore, U.T.; Bagde, N.T.; Rathod, V.J.",
+    "Title": "Economic analysis of bamboo cultivation in Nagpur district",
+    "Publication_Year": 2021,
+    "Source_Type": "Journal article",
+    "Source_URL": "https://www.phytojournal.com/archives/2021.v10.i2S.13945/economic-analysis-of-bamboo-cultivation-in-nagpur-district",
+    "Page_Table_or_Location": "Journal of Pharmacognosy and Phytochemistry 10(2S), 2021; data year 2019–20",
+    "Source_Quality_and_Usage_Notes": "Nagpur district sample study; do not present as Karnataka costs or current 2026 prices."
+  },
+  {
+    "Source_ID": "S14",
+    "Authors_or_Publisher": "Times of India, Mangaluru Bureau",
+    "Title": "Sullia farmer promotes bamboo cultivation",
+    "Publication_Year": 2023,
+    "Source_Type": "News report / farmer and local organiser statements",
+    "Source_URL": "https://timesofindia.indiatimes.com/city/mangaluru/sullia-farmer-promotes-bamboo-cultivation/articleshow/101771909.cms",
+    "Page_Table_or_Location": "Published July 2023; statements about Uttara Kannada / coastal Karnataka cultivation",
+    "Source_Quality_and_Usage_Notes": "Reported estimates attributed to a local organiser; useful lead, not audited representative survey."
+  },
+  {
+    "Source_ID": "S15",
+    "Authors_or_Publisher": "ICFRE",
+    "Title": "Technology Outreach for Livelihood Improvement: Bamboo shoot production protocol",
+    "Publication_Year": 2025,
+    "Source_Type": "Government research institute technical manual",
+    "Source_URL": "https://icfre.gov.in/pdf/books-file/book8.pdf",
+    "Page_Table_or_Location": "Economic viability section; Jorhat, Assam; underlying economic data year 2019",
+    "Source_Quality_and_Usage_Notes": "Assam bamboo-shoot agroforestry case; do not generalise to Karnataka culm plantations."
+  },
+  {
+    "Source_ID": "S16",
+    "Authors_or_Publisher": "NABARD, Karnataka Regional Office / State Level Unit Cost Committee",
+    "Title": "Unit Cost 2025–26, Karnataka",
+    "Publication_Year": 2025,
+    "Source_Type": "Official Karnataka unit-cost schedule",
+    "Source_URL": "https://slbckarnataka.com/UserFiles/slbc/UC%20Booklet%20Karnataka%20Print.pdf",
+    "Page_Table_or_Location": "Chapter 6 – Forestry, page 30; Bamboo and Bamboo (Tissue culture) rows",
+    "Source_Quality_and_Usage_Notes": "Indicative bank-financing unit costs, not audited actual farmer expenditure. Schedule states costs may vary by agro-climatic region and location-specific conditions."
+  }
+]

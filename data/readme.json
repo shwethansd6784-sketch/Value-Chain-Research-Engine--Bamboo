@@ -1,0 +1,90 @@
+[
+  [
+    "BAMBOO VALUE CHAIN RESEARCH ENGINE — DATASET GUIDE",
+    ""
+  ],
+  [
+    "Prepared for",
+    "Visionary Vertex | Atria Institute of Technology"
+  ],
+  [
+    "Prepared on",
+    "22 November 2026"
+  ],
+  [
+    "Purpose",
+    "Source-linked starter dataset for a research-engine prototype. Combines government statistics, published studies, official programme progress and historical market data."
+  ],
+  [
+    "Important",
+    "Do not display all values as current Karnataka figures. Show geography, data period, unit, population and evidence type with every result."
+  ],
+  [
+    "Record count",
+    "77"
+  ],
+  [
+    "How to use",
+    "Use Research Dataset as the data table. Join Source_ID to the Sources sheet to show source title and URL."
+  ],
+  [
+    "Recommended filters",
+    "Category; Value-chain stage; Geography; Publication year; Evidence type."
+  ],
+  [
+    "Status handling",
+    "Published does not automatically mean current. Keep projections, estimates, qualitative findings and historical values visibly distinct."
+  ],
+  [
+    "Farmer-income warning",
+    "MANAGE Sindhudurg and Latur annual-income figures are total farmer income, not bamboo-only income. The report says bamboo-based income could not be recorded for Latur because many plantations were newly established."
+  ],
+  [
+    "Transport warning",
+    "Palakkad per-truck costs are from 1994–95 and are historical only. The 2026 Karnataka paper reports transport at 25–40% of expenses, but the cost base needs checking; it is not a freight tariff."
+  ],
+  [
+    "Wage warning",
+    "Labour Bureau occupational wage rates are benchmarks, not necessarily bamboo-only earnings. In Jan 2025–26, Karnataka bamboo/cane basket-weaver wage is unavailable (@ / dash); do not carry forward the earlier figure."
+  ],
+  [
+    "2026 paper quality note",
+    "The 2026 Frontiers paper reports 128 respondents across eight Karnataka districts. Its product-price table has ambiguous year labels, so product prices were deliberately excluded."
+  ],
+  [
+    "No invented values",
+    "Missing information is not filled with estimates. Add field interviews only after recording date, location, unit, respondent role and consent."
+  ],
+  [
+    "Next local data to collect",
+    "Current Bengaluru purchase/selling price per pole by length/species/grade; freight per trip and per km; loading/unloading cost; truck capacity; bamboo-only farm revenue; harvesting wage; processing cost per product."
+  ],
+  [
+    "Citation practice",
+    "For every website finding show source title, original URL, page/table/section, publication year and data period."
+  ],
+  [
+    "Workbook note",
+    "This is a research starter dataset, not a statistically representative sample for all India or all Karnataka."
+  ],
+  [
+    "Per-record source URL",
+    "A Source_URL column has been added to every dataset row. Use it directly in the website as the source link."
+  ],
+  [
+    "Farmer cultivation expansion",
+    "Additional farmer cultivation records B078–B107 include NABARD 2025–26 unit-cost schedule, ICFRE technical estimates, Nagpur study and a coastal Karnataka news lead. Each has its geography and evidence caveat."
+  ],
+  [
+    "Explicit data gaps",
+    "Records B108–B111 explicitly mark Karnataka bamboo-only net farmer income, measured current maintenance cost, current harvesting charges and current bamboo freight rates as GAP — not found."
+  ],
+  [
+    "Important comparison rule",
+    "Do not merge India planning schedules, Maharashtra study results and Karnataka news estimates into one average. Show geography, data period and evidence type."
+  ],
+  [
+    "New Karnataka-specific source",
+    "Records B112–B117 use the NABARD Karnataka Unit Cost 2025–26 schedule: ₹77,000/ha for bamboo and ₹86,000/ha for tissue-culture bamboo. These are indicative unit costs, not measured actual farmer expenses."
+  ]
+]
